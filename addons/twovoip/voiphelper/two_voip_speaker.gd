@@ -120,7 +120,8 @@ func _ready():
 	audioplayeropus = get_parent().findaudioplayer() if get_parent().has_method("findaudioplayer") else get_parent()
 	if audioplayeropus.has_method("set_stream"):
 		audiostreamopus = AudioStreamOpus.new()
-		audioplayeropus.set_stream(audiostreamopus)
+		if not audioplayeropus.has_method("get_inner_stream_playback"):
+			audioplayeropus.set_stream(audiostreamopus)
 		audioplayeropus.max_polyphony = maximum_simultaneous_episodes
 	else:
 		audioplayeropus = null
@@ -138,8 +139,12 @@ func _exit_tree():
 
 
 func create_episode_playback() -> bool:
-	audioplayeropus.play()  # Every talking episode gets its own playback.
-	audio_stream_playback_opus = audioplayeropus.get_stream_playback()
+	if audioplayeropus.has_method("get_inner_stream_playback"):
+		audioplayeropus.play_stream(audiostreamopus)
+		audio_stream_playback_opus = audioplayeropus.get_inner_stream_playback()
+	else:
+		audioplayeropus.play()  # Every talking episode gets its own playback.
+		audio_stream_playback_opus = audioplayeropus.get_stream_playback()
 	var result = audio_stream_playback_opus.initialize(opus_sample_rate, opus_channels,
 			opusframesize, audio_buffer_length, stale_episode_timeout)
 	if result != OK:
