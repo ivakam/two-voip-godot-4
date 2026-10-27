@@ -315,12 +315,13 @@ int AudioStreamPlaybackOpus::push_opus_packet(const PackedByteArray& opusbytepac
         return OPUS_INVALID_PACKET; // negative
     }
 
-    const int has_lbrr = opus_packet_has_lbrr(opus_data, opus_data_size);
-    if (has_lbrr < 0) {
-        UtilityFunctions::printerr("opus_packet_has_lbrr error: ", has_lbrr);
-    } else if (decode_fec == 1 && has_lbrr == 0) {
-        UtilityFunctions::printerr("FEC requested but packet contains no LBRR");
-    }
+    // NOTE: Commented out because it spams nothingburger errors.
+    // const int has_lbrr = opus_packet_has_lbrr(opus_data, opus_data_size);
+    // if (has_lbrr < 0) {
+    //     UtilityFunctions::printerr("opus_packet_has_lbrr error: ", has_lbrr);
+    // } else if (decode_fec == 1 && has_lbrr == 0) {
+    //     UtilityFunctions::printerr("FEC requested but packet contains no LBRR");
+    // }
     
     // implement PLC (packet loss)
     if (decode_fec == 2) {
